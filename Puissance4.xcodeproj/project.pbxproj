@@ -12,6 +12,10 @@
 		824293F821AB2DAB00DA1FA5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 824293F621AB2DAB00DA1FA5 /* Main.storyboard */; };
 		824293FA21AB2DAC00DA1FA5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 824293F921AB2DAC00DA1FA5 /* Assets.xcassets */; };
 		824293FD21AB2DAC00DA1FA5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 824293FB21AB2DAC00DA1FA5 /* LaunchScreen.storyboard */; };
+		8245E69621ABFF3300178D7A /* JetonRouge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8245E69521ABFF3300178D7A /* JetonRouge.swift */; };
+		826F845321AD4FB70090574E /* JetonJaune.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826F845221AD4FB70090574E /* JetonJaune.swift */; };
+		82AF21B021AD894700F7EE15 /* Mecanisme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AF21AF21AD894700F7EE15 /* Mecanisme.swift */; };
+		82AF21B221AD895800F7EE15 /* BrainIA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AF21B121AD895800F7EE15 /* BrainIA.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +26,10 @@
 		824293F921AB2DAC00DA1FA5 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		824293FC21AB2DAC00DA1FA5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		824293FE21AB2DAC00DA1FA5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8245E69521ABFF3300178D7A /* JetonRouge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JetonRouge.swift; sourceTree = "<group>"; };
+		826F845221AD4FB70090574E /* JetonJaune.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JetonJaune.swift; sourceTree = "<group>"; };
+		82AF21AF21AD894700F7EE15 /* Mecanisme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mecanisme.swift; sourceTree = "<group>"; };
+		82AF21B121AD895800F7EE15 /* BrainIA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrainIA.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,13 +63,49 @@
 			isa = PBXGroup;
 			children = (
 				824293F221AB2DAA00DA1FA5 /* AppDelegate.swift */,
-				824293F421AB2DAB00DA1FA5 /* ViewController.swift */,
-				824293F621AB2DAB00DA1FA5 /* Main.storyboard */,
+				82AF21B321AD895E00F7EE15 /* Model */,
+				82AF21B421AD896500F7EE15 /* View */,
+				82AF21B521AD896C00F7EE15 /* Controller */,
+				82AF21B621AD897400F7EE15 /* Stroryboard */,
 				824293F921AB2DAC00DA1FA5 /* Assets.xcassets */,
-				824293FB21AB2DAC00DA1FA5 /* LaunchScreen.storyboard */,
 				824293FE21AB2DAC00DA1FA5 /* Info.plist */,
 			);
 			path = Puissance4;
+			sourceTree = "<group>";
+		};
+		82AF21B321AD895E00F7EE15 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				82AF21AF21AD894700F7EE15 /* Mecanisme.swift */,
+				82AF21B121AD895800F7EE15 /* BrainIA.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		82AF21B421AD896500F7EE15 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				8245E69521ABFF3300178D7A /* JetonRouge.swift */,
+				826F845221AD4FB70090574E /* JetonJaune.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		82AF21B521AD896C00F7EE15 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				824293F421AB2DAB00DA1FA5 /* ViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		82AF21B621AD897400F7EE15 /* Stroryboard */ = {
+			isa = PBXGroup;
+			children = (
+				824293F621AB2DAB00DA1FA5 /* Main.storyboard */,
+				824293FB21AB2DAC00DA1FA5 /* LaunchScreen.storyboard */,
+			);
+			path = Stroryboard;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,7 +179,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8245E69621ABFF3300178D7A /* JetonRouge.swift in Sources */,
 				824293F521AB2DAB00DA1FA5 /* ViewController.swift in Sources */,
+				826F845321AD4FB70090574E /* JetonJaune.swift in Sources */,
+				82AF21B021AD894700F7EE15 /* Mecanisme.swift in Sources */,
+				82AF21B221AD895800F7EE15 /* BrainIA.swift in Sources */,
 				824293F321AB2DAA00DA1FA5 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
