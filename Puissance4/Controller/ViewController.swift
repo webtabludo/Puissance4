@@ -6,49 +6,219 @@
 //  Copyright © 2018 ludo iMac. All rights reserved.
 //
 
+
 import UIKit
 
 class ViewController: UIViewController {
-
+    
     var gravity: UIGravityBehavior!
     var animator: UIDynamicAnimator!
     var collision: UICollisionBehavior!
-  
-    var jetonRouge: JetonRouge!
-    var jetonJaune: JetonJaune!
-
-
-    let coordHorizontal = [8,60,113,165,217,270,322]
-    let coordVertical = [472,419.5,367,314.5,262,209.5]
     
-    // Grille de jeux 0 = vide / R = jeton rouge / J = jeton jaune
-    var grilleDeJeux = [["0","0","0","0","0","0"],["0","0","0","0","0","0"],["0","0","0","0","0","0"],["0","0","0","0","0","0"],["0","0","0","0","0","0"],["0","0","0","0","0","0"],["0","0","0","0","0","0"]]
+    
+    @IBOutlet weak var arrow: UIImageView!
+    @IBOutlet weak var boutonValider: UIButton!
+    
+    var victoire =  false
+    
+    let coordHorizontal = [8,60,113,165,217,270,322]
+    let coordVertical = [473,419.5,367,314.5,262,209.5]
+    
+    var positCurseur = 8
+    var mecanisme = Mecanisme()
+    var remplissageColonne = 0
+    var brain = BrainIA()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       creationJetonRouge(frameX: coordHorizontal[0], gravityA: CGFloat(coordHorizontal[0]), gravityB: CGFloat(coordVertical[1]))
-
+        mecanisme.grilleVide = Array(repeating: "O", count: 42)
+        mecanisme.coordonnées = Dictionary(uniqueKeysWithValues: zip(1...42,mecanisme.grilleVide))
+        
     }
-        
-        
-// Fonction création d'un Jeton rouge
+    // Slider + Mouvement flèche
     
-    func creationJetonRouge (frameX:Int, gravityA: CGFloat, gravityB: CGFloat) {
-       
+    @IBAction func slider(_ sender: UISlider) {
+        let currentValue = coordHorizontal[Int(sender.value)]
+        positCurseur = currentValue
+        print(positCurseur)
+        UIView.animate(withDuration: 0, animations: {
+            self.arrow.frame.origin.x = CGFloat(self.positCurseur)
+        }, completion: nil)
+    }
+    
+    // Bouton valider
+    
+    @IBAction func valideAction(_ sender: UIButton) {
+        let gravityBoundary = boundary(positCurseur: positCurseur)
+        
+        creationJetonRouge(frameX: positCurseur, gravityB: CGFloat(gravityBoundary))
+        
+        // Ajouter le jeton dans la grille
+        let colonne = addJeton()
+        
+        updateGlobal(jeton: "R", colonne: colonne, remplissageColonne: remplissageColonne)
+        
+        boutonValider.isEnabled = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+
+            let choix = self.brain.iAPlay()
+            let gravityBoundaryIA = self.boundaryIA(positCurseur: choix)
+            self.creationJetonJaune(frameX: choix, gravityB: CGFloat(gravityBoundaryIA))
+            self.boutonValider.isEnabled = true
+            
+            
+        }
+        
+    }
+    
+    
+    //Fonction ajouter le jeton dans la grille
+    
+    func addJeton () -> Int {
+        var colonne = 0
+        switch positCurseur {
+        case 8:
+            colonne = 0
+        case 60:
+            colonne = 1
+        case 113:
+            colonne = 2
+        case 165:
+            colonne = 3
+        case 217:
+            colonne = 4
+        case 270:
+            colonne = 5
+        case 322:
+            colonne = 6
+        default:
+            print("impossible")
+        }
+        return colonne
+    }
+    
+    //Fonction création de la boundary player
+    
+    func boundary (positCurseur: Int) -> Double {
+        var gravityBoundary = 0.0
+        switch positCurseur {
+        case 8:
+            remplissageColonne = mecanisme.grilleDeJeux[0].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        case 60:
+            remplissageColonne = mecanisme.grilleDeJeux[1].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        case 113:
+            remplissageColonne = mecanisme.grilleDeJeux[2].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        case 165:
+            remplissageColonne = mecanisme.grilleDeJeux[3].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        case 217:
+            remplissageColonne = mecanisme.grilleDeJeux[4].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        case 270:
+            remplissageColonne = mecanisme.grilleDeJeux[5].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        case 322:
+            remplissageColonne = mecanisme.grilleDeJeux[6].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        default:
+            print("impossible")
+            
+        }
+        
+        return gravityBoundary
+    }
+    
+    
+    //Fonction création de la boundary IA
+    
+    func boundaryIA (positCurseur: Int) -> Double {
+        var gravityBoundary = 0.0
+        switch positCurseur {
+        case 0:
+            remplissageColonne = mecanisme.grilleDeJeux[0].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        case 1:
+            remplissageColonne = mecanisme.grilleDeJeux[1].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        case 2:
+            remplissageColonne = mecanisme.grilleDeJeux[2].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        case 3:
+            remplissageColonne = mecanisme.grilleDeJeux[3].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        case 4:
+            remplissageColonne = mecanisme.grilleDeJeux[4].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        case 5:
+            remplissageColonne = mecanisme.grilleDeJeux[5].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        case 6:
+            remplissageColonne = mecanisme.grilleDeJeux[6].count
+            gravityBoundary = coordVertical[remplissageColonne]
+        default:
+            print("impossible")
+            
+        }
+        
+        return gravityBoundary
+    }
+    
+    // Fonction mise à jour BDD + test victoire
+    
+    func updateGlobal (jeton: String, colonne: Int, remplissageColonne: Int) {
+        
+        mecanisme.ajouterJeton(jeton: jeton, colonne: colonne)
+        
+        mecanisme.coordonnées.updateValue(jeton, forKey: (remplissageColonne * 7) + (colonne + 1))
+        print(mecanisme.coordonnées)
+        
+        for (key,value) in mecanisme.coordonnées {
+            if value == "R" {
+                mecanisme.grilleRed.insert(key)
+                print("GrilleRed:\(mecanisme.grilleRed)")
+            } else if value == "J" {
+                mecanisme.grilleYellow.insert(key)
+                print("GrilleYellow:\(mecanisme.grilleYellow)")
+            }
+        }
+        if jeton == "R" {
+            victoire = mecanisme.testVictoire(grilleJeton: mecanisme.grilleRed)
+        } else if jeton == "J" {
+            victoire = mecanisme.testVictoire(grilleJeton: mecanisme.grilleYellow)
+        }
+    }
+    
+    
+    
+    // Fonction création d'un Jeton Rouge
+    
+    func creationJetonRouge (frameX:Int, gravityB: CGFloat) {
+        
         
         let imageRondeRouge = JetonRouge(frame: CGRect(x: frameX, y: 0, width: 45, height: 45))
-        //imageRondeRouge.backgroundColor = UIColor.red
+        
         view.addSubview(imageRondeRouge)
-
         
-        creationGravity(jeton: imageRondeRouge, a: gravityA, b: gravityB)
+        
+        creationGravity(jeton: imageRondeRouge, a: CGFloat(frameX), b: gravityB)
     }
-
-    // Fonction création d'un Jeton jaune (à faire)
     
-    func creationJetonJaune () {
+    // Fonction création d'un Jeton jaune
+    
+    func creationJetonJaune (frameX:Int, gravityB: CGFloat) {
+        let imageRondeJaune = JetonJaune(frame: CGRect(x: frameX, y: 0, width: 45, height: 45))
         
+        view.addSubview(imageRondeJaune)
+        
+        
+        creationGravity(jeton: imageRondeJaune, a: CGFloat(frameX), b: gravityB)
     }
+    
+    
     // Fonction création de la gravité
     
     func creationGravity (jeton: UIView, a: CGFloat, b:CGFloat) {

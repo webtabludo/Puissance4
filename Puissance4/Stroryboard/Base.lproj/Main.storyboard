@@ -25,15 +25,49 @@
                                     <constraint firstAttribute="width" constant="375" id="R5u-4V-nBn"/>
                                 </constraints>
                             </imageView>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="7" continuous="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iJW-0K-nBT">
+                                <rect key="frame" x="-2" y="522" width="379" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="375" id="iWJ-T3-uei"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="slider:" destination="BYZ-38-t0r" eventType="valueChanged" id="qV5-er-qrv"/>
+                                </connections>
+                            </slider>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="Arrow" translatesAutoresizingMaskIntoConstraints="NO" id="sRx-uP-l7R">
+                                <rect key="frame" x="8" y="100" width="50" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fjb-Pf-2DV">
+                                <rect key="frame" x="133" y="570" width="109" height="58"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="21"/>
+                                <state key="normal" title="Valider">
+                                    <color key="titleColor" red="1" green="0.2571640556" blue="0.19279355610000001" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
+                                <connections>
+                                    <action selector="valideAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="0hJ-Mj-Xys"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="IuK-2A-l1D" secondAttribute="bottom" constant="145" id="Bed-KB-Zed"/>
+                            <constraint firstItem="iJW-0K-nBT" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Ec1-4C-Tod"/>
+                            <constraint firstItem="fjb-Pf-2DV" firstAttribute="top" secondItem="iJW-0K-nBT" secondAttribute="bottom" constant="18" id="Fga-jn-FVg"/>
+                            <constraint firstItem="fjb-Pf-2DV" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="133" id="OD7-Q7-91m"/>
+                            <constraint firstItem="iJW-0K-nBT" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="S3f-4O-AJs"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="fjb-Pf-2DV" secondAttribute="trailing" constant="133" id="Xh4-EE-GXc"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="iJW-0K-nBT" secondAttribute="bottom" constant="115" id="m88-yG-0hf"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="fjb-Pf-2DV" secondAttribute="bottom" constant="39" id="pLf-fk-rT1"/>
                             <constraint firstItem="IuK-2A-l1D" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="vkn-4V-ev9"/>
                             <constraint firstItem="IuK-2A-l1D" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="vpm-Xs-mre"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <connections>
+                        <outlet property="arrow" destination="sRx-uP-l7R" id="UNw-aK-6Qk"/>
+                        <outlet property="boutonValider" destination="fjb-Pf-2DV" id="tBS-Q8-5N2"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -41,6 +75,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="Arrow" width="48" height="48"/>
         <image name="Grille Finale" width="692" height="590"/>
     </resources>
 </document>
