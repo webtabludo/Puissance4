@@ -26,13 +26,9 @@ extension Array where Element: Equatable {
 
 struct BrainIA {
     var laGrille:Set<Int> = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42]
-    
-    //Toujours jouer le premier pion au centre
-    
-    func playFirst () -> Int {
-        return 3
-    }
-    
+    var leftCenter = false
+    var rightCenter = false
+  
     //Fonction choix colonne fonction resultat grille
     
     func colonnePlayed (caseGrille: Int) -> Int {
@@ -63,47 +59,35 @@ struct BrainIA {
     //fonction Attaque dès que 3 jetons aligner
     
     // Colonne
-    func attaqueColonne (red: Set<Int>, yellow: Set<Int>) -> Int{
+    func attaqueColonne (red: Set<Int>, yellow: Set<Int>) -> Int {
         var colonne = 3
-        var resultat = 0
         var result:[Int] = []
-        var colonnePossible:Set<Int> = []
         for x in yellow {
-            let possibilité2:Set<Int> = [x + 7]
-            colonnePossible = colonnePossible.union(possibilité2)
+            var colonnePossible:Set<Int> = [(x + 7)]
             
             colonnePossible = laGrille.intersection(colonnePossible)
             colonnePossible.subtract(red)
             colonnePossible.subtract(yellow)
+            if let exist = colonnePossible.first {
+                result.append(exist)
+            }
         }
         
-        if let exist = colonnePossible.first {
-            result.append(exist)
-            
-            
-        }
-        if let valeur = result.first {
-            resultat = valeur
-        }
-        if result.count > 1 {
-            colonne = 3
-        } else {
-            if resultat != 0 {
-                let combinaison = result + Array(yellow)
-                
-                let solution1:[Int] = [resultat,resultat + 7,resultat + 14,resultat + 21]
-                let solution2:[Int] = [resultat,resultat + 7,resultat + 14,resultat - 7]
-                let solution3:[Int] = [resultat,resultat + 7,resultat - 7,resultat - 14]
-                let solution4:[Int] = [resultat,resultat - 7,resultat - 14,resultat - 21]
-                if combinaison.sorted().contains(array: (solution1.sorted())) ||
-                    combinaison.sorted().contains(array: (solution2.sorted())) ||
-                    combinaison.sorted().contains(array: (solution3.sorted())) ||
-                    combinaison.sorted().contains(array: (solution4.sorted())) {
-                    colonne = colonnePlayed(caseGrille: resultat)
-                } else {
-                    colonne = 3
-                }
+        for resultat in result {
+            let combinaison = [resultat] + Array(yellow)
+            let solution1:[Int] = [resultat,resultat + 7,resultat + 14,resultat + 21]
+            let solution2:[Int] = [resultat,resultat + 7,resultat + 14,resultat - 7]
+            let solution3:[Int] = [resultat,resultat + 7,resultat - 7,resultat - 14]
+            let solution4:[Int] = [resultat,resultat - 7,resultat - 14,resultat - 21]
+            if combinaison.sorted().contains(array: (solution1.sorted())) ||
+                combinaison.sorted().contains(array: (solution2.sorted())) ||
+                combinaison.sorted().contains(array: (solution3.sorted())) ||
+                combinaison.sorted().contains(array: (solution4.sorted())) {
+                colonne = colonnePlayed(caseGrille: resultat)
+            } else {
+                colonne = 3
             }
+            
         }
         print("jouer ATK colonne:\(colonne)")
         return colonne
@@ -124,26 +108,22 @@ struct BrainIA {
             if limiteGauche.contains(x) {
                 
                 var lignePossible:Set<Int> = [(x + 1)]
-                
-                
+
                 lignePossible = laGrille.intersection(lignePossible)
                 lignePossible.subtract(red)
                 lignePossible.subtract(yellow)
                 
-                if let exist = lignePossible.first {
-                    result.append(exist)
-                }
+                result.append(contentsOf: Array(lignePossible))
+
             } else if limiteDroite.contains(x) {
                 
                 var lignePossible:Set<Int> = [(x - 1)]
-                
                 lignePossible = laGrille.intersection(lignePossible)
                 lignePossible.subtract(red)
                 lignePossible.subtract(yellow)
                 
-                if let exist = lignePossible.first {
-                    result.append(exist)
-                }
+                result.append(contentsOf: Array(lignePossible))
+
             } else {
                 
                 var lignePossible:Set<Int> = [(x - 1), (x + 1)]
@@ -152,36 +132,40 @@ struct BrainIA {
                 lignePossible = laGrille.intersection(lignePossible)
                 lignePossible.subtract(red)
                 lignePossible.subtract(yellow)
-                if let exist = lignePossible.first {
-                    result.append(exist)
-                }
+                result.append(contentsOf: Array(lignePossible))
+
             }
-        }
-        if let valeur = result.first {
-            resultat = valeur
-        }
-        
-        if result.count > 1 {
-            colonne = 3
-        } else {
-            if resultat != 0 {
-                let combinaison = result + Array(yellow)
-              
-                let solution1:[Int] = [resultat,resultat + 1,resultat + 2,resultat + 3]
-                let solution2:[Int] = [resultat,resultat - 1,resultat + 1,resultat + 2]
-                let solution3:[Int] = [resultat,resultat - 1,resultat - 2,resultat + 1]
-                let solution4:[Int] = [resultat,resultat - 1,resultat - 2,resultat - 3]
-                
-                if combinaison.sorted().contains(array: (solution1.sorted())) ||
-                    combinaison.sorted().contains(array: (solution2.sorted())) ||
-                    combinaison.sorted().contains(array: (solution3.sorted())) ||
-                    combinaison.sorted().contains(array: (solution4.sorted())) {
+            let duplicates = Array(Set(result.filter({ (i: Int) in result.filter({ $0 == i }).count > 1})))
+            if let exist = duplicates.first {
+                resultat = exist
+                if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
+                    
                     colonne = colonnePlayed(caseGrille: resultat)
-                } else {
-                    colonne = 3
+                }
+            } else {
+                for resultat in result{
+                    let combinaison = [resultat] + Array(yellow)
+                    
+                    let solution1:[Int] = [resultat,resultat + 1,resultat + 2,resultat + 3]
+                    let solution2:[Int] = [resultat,resultat - 1,resultat + 1,resultat + 2]
+                    let solution3:[Int] = [resultat,resultat - 1,resultat - 2,resultat + 1]
+                    let solution4:[Int] = [resultat,resultat - 1,resultat - 2,resultat - 3]
+                    
+                    if combinaison.sorted().contains(array: (solution1.sorted())) ||
+                        combinaison.sorted().contains(array: (solution2.sorted())) ||
+                        combinaison.sorted().contains(array: (solution3.sorted())) ||
+                        combinaison.sorted().contains(array: (solution4.sorted())) {
+                        if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
+                            
+                            colonne = colonnePlayed(caseGrille: resultat)
+                        }
+                    } else {
+                        colonne = 3
+                    }
                 }
             }
         }
+            
         print("jouer ATK ligne:\(colonne)")
         return colonne
     }
@@ -203,30 +187,24 @@ struct BrainIA {
                 colonnePossible.subtract(red)
                 colonnePossible.subtract(yellow)
                 colonnePossible.subtract(Set(grilleImpossible))
-                
-                // a supp et faire tout les resultat dans result et si 2 fois meme valeur la choisir ou prendre le premier
-                //                if let exist = colonnePossible.first {
-                //                    result.append(exist)
-                //                    print(result)
-                //                }
-                result.append(contentsOf: Array(colonnePossible)) // new
+
+                result.append(contentsOf: Array(colonnePossible))
                 
             }
         }
-        //        if let valeur = result.first {
-        //            resultat = valeur
-        //        }
-        let duplicates = Array(Set(result.filter({ (i: Int) in result.filter({ $0 == i }).count > 1}))) //new
-        if let exist = duplicates.first {                                                               //new
-            resultat = exist                                                                            //new
-        }
-        
-        if result.count > 1 {
-            colonne = 3
+
+        let duplicates = Array(Set(result.filter({ (i: Int) in result.filter({ $0 == i }).count > 1})))
+        if let exist = duplicates.first {
+            resultat = exist
+            if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
+                
+                colonne = colonnePlayed(caseGrille: resultat)
+            }
+            
         } else {
-            if resultat != 0 {
-                let combinaison = result + Array(yellow)
-           
+            for resultat in result {
+                let combinaison = [resultat] + Array(yellow)
+                
                 let solution1:[Int] = [resultat,resultat + 6,resultat + 12,resultat + 18]
                 let solution2:[Int] = [resultat,resultat - 6,resultat + 6,resultat + 12]
                 let solution3:[Int] = [resultat,resultat - 6,resultat - 12,resultat + 6]
@@ -236,7 +214,10 @@ struct BrainIA {
                     combinaison.sorted().contains(array: (solution2.sorted())) ||
                     combinaison.sorted().contains(array: (solution3.sorted())) ||
                     combinaison.sorted().contains(array: (solution4.sorted())) {
-                    colonne = colonnePlayed(caseGrille: resultat)
+                    if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
+                        
+                        colonne = colonnePlayed(caseGrille: resultat)
+                    }
                 } else {
                     colonne = 3
                 }
@@ -262,29 +243,22 @@ struct BrainIA {
                 colonnePossible.subtract(red)
                 colonnePossible.subtract(yellow)
                 colonnePossible.subtract(Set(grilleImpossible))
-                
-                // a supp et faire tout les resultat dans result et si 2 fois meme valeur la choisir ou prendre le premier
-                //                if let exist = colonnePossible.first {
-                //                    result.append(exist)
-                //                    print(result)
-                //                }
-                result.append(contentsOf: Array(colonnePossible)) // new
+
+                result.append(contentsOf: Array(colonnePossible))
                 
             }
         }
-        //        if let valeur = result.first {
-        //            resultat = valeur
-        //        }
-        let duplicates = Array(Set(result.filter({ (i: Int) in result.filter({ $0 == i }).count > 1}))) //new
-        if let exist = duplicates.first {                                                               //new
-            resultat = exist                                                                            //new
-        }
-        
-        if result.count > 1 {
-            colonne = 3
+
+        let duplicates = Array(Set(result.filter({ (i: Int) in result.filter({ $0 == i }).count > 1})))
+        if let exist = duplicates.first {
+            resultat = exist
+            if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
+                
+                colonne = colonnePlayed(caseGrille: resultat)
+            }
         } else {
-            if resultat != 0 {
-                let combinaison = result + Array(yellow)
+            for resultat in result {
+                let combinaison = [resultat] + Array(yellow)
                 
                 let solution1:[Int] = [resultat,resultat + 8,resultat + 16,resultat + 24]
                 let solution2:[Int] = [resultat,resultat - 8,resultat + 8,resultat + 16]
@@ -295,7 +269,10 @@ struct BrainIA {
                     combinaison.sorted().contains(array: (solution2.sorted())) ||
                     combinaison.sorted().contains(array: (solution3.sorted())) ||
                     combinaison.sorted().contains(array: (solution4.sorted())) {
-                    colonne = colonnePlayed(caseGrille: resultat)
+                    if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
+                        
+                        colonne = colonnePlayed(caseGrille: resultat)
+                    }
                 } else {
                     colonne = 3
                 }
@@ -309,47 +286,37 @@ struct BrainIA {
     
     //fonction Défense dès que 3 jetons aligner
     
+
     // Colonne
     func defenseColonne (red: Set<Int>, yellow: Set<Int>) -> Int {
         var colonne = 3
-        var resultat = 0
         var result:[Int] = []
-        var colonnePossible:Set<Int> = []
-            for x in red {
-            let possibilité2:Set<Int> = [(x + 7)]
-            colonnePossible = colonnePossible.union(possibilité2)
+        for x in red {
+            var colonnePossible:Set<Int> = [(x + 7)]
             
             colonnePossible = laGrille.intersection(colonnePossible)
             colonnePossible.subtract(red)
             colonnePossible.subtract(yellow)
-        }
-
-        if let exist = colonnePossible.first {
-            result.append(exist)
-            
-        }
-        if let valeur = result.first {
-            resultat = valeur
-        }
-        if result.count > 1 {
-            colonne = 3
-        } else {
-            if resultat != 0 {
-                let combinaison = result + Array(red)
-              
-                let solution1:[Int] = [resultat,resultat + 7,resultat + 14,resultat + 21]
-                let solution2:[Int] = [resultat,resultat + 7,resultat + 14,resultat - 7]
-                let solution3:[Int] = [resultat,resultat + 7,resultat - 7,resultat - 14]
-                let solution4:[Int] = [resultat,resultat - 7,resultat - 14,resultat - 21]
-                if combinaison.sorted().contains(array: (solution1.sorted())) ||
-                    combinaison.sorted().contains(array: (solution2.sorted())) ||
-                    combinaison.sorted().contains(array: (solution3.sorted())) ||
-                    combinaison.sorted().contains(array: (solution4.sorted())) {
-                    colonne = colonnePlayed(caseGrille: resultat)
-                } else {
-                    colonne = 3
-                }
+            if let exist = colonnePossible.first {
+                result.append(exist)
             }
+        }
+        
+        for resultat in result {
+            let combinaison = [resultat] + Array(red)
+            let solution1:[Int] = [resultat,resultat + 7,resultat + 14,resultat + 21]
+            let solution2:[Int] = [resultat,resultat + 7,resultat + 14,resultat - 7]
+            let solution3:[Int] = [resultat,resultat + 7,resultat - 7,resultat - 14]
+            let solution4:[Int] = [resultat,resultat - 7,resultat - 14,resultat - 21]
+            if combinaison.sorted().contains(array: (solution1.sorted())) ||
+                combinaison.sorted().contains(array: (solution2.sorted())) ||
+                combinaison.sorted().contains(array: (solution3.sorted())) ||
+                combinaison.sorted().contains(array: (solution4.sorted())) {
+                colonne = colonnePlayed(caseGrille: resultat)
+            } else {
+                colonne = 3
+            }
+            
         }
         print("jouer DEF colonne:\(colonne)")
         return colonne
@@ -376,9 +343,7 @@ struct BrainIA {
                 lignePossible.subtract(red)
                 lignePossible.subtract(yellow)
                 
-                if let exist = lignePossible.first {
-                    result.append(exist)
-                }
+                result.append(contentsOf: Array(lignePossible))
             } else if limiteDroite.contains(x) {
                 
                 var lignePossible:Set<Int> = [(x - 1)]
@@ -387,9 +352,7 @@ struct BrainIA {
                 lignePossible.subtract(red)
                 lignePossible.subtract(yellow)
                 
-                if let exist = lignePossible.first {
-                    result.append(exist)
-                }
+                result.append(contentsOf: Array(lignePossible))
             } else {
                 
                 var lignePossible:Set<Int> = [(x - 1), (x + 1)]
@@ -398,22 +361,22 @@ struct BrainIA {
                 lignePossible = laGrille.intersection(lignePossible)
                 lignePossible.subtract(red)
                 lignePossible.subtract(yellow)
-                if let exist = lignePossible.first {
-                    result.append(exist)
-
-                }
+                result.append(contentsOf: Array(lignePossible))
+            
+        }
+        let duplicates = Array(Set(result.filter({ (i: Int) in result.filter({ $0 == i }).count > 1})))
+        if let exist = duplicates.first {
+            resultat = exist
+            print("ça merde resultat:\(resultat)")
+            if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
+                
+                colonne = colonnePlayed(caseGrille: resultat)
             }
-        }
-        if let valeur = result.first {
-            resultat = valeur
-        }
-        
-        if result.count > 1 {
-            colonne = 3
         } else {
-            if resultat != 0 {
-                let combinaison = result + Array(red)
-           
+            for resultat in result{
+                let combinaison = [resultat] + Array(red)
+                print("ça merde combinaison:\(combinaison)")
+
                 let solution1:[Int] = [resultat,resultat + 1,resultat + 2,resultat + 3]
                 let solution2:[Int] = [resultat,resultat - 1,resultat + 1,resultat + 2]
                 let solution3:[Int] = [resultat,resultat - 1,resultat - 2,resultat + 1]
@@ -423,16 +386,20 @@ struct BrainIA {
                     combinaison.sorted().contains(array: (solution2.sorted())) ||
                     combinaison.sorted().contains(array: (solution3.sorted())) ||
                     combinaison.sorted().contains(array: (solution4.sorted())) {
-                    colonne = colonnePlayed(caseGrille: resultat)
+                    if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
+                        
+                        colonne = colonnePlayed(caseGrille: resultat)
+                    }
                 } else {
                     colonne = 3
                 }
             }
         }
+    }
         print("jouer DEF ligne:\(colonne)")
         return colonne
     }
-    
+
     //fonction test est ce que adverssaire a 3 jeton aligner et contrer
     
     // Diagonale Gauche
@@ -451,27 +418,22 @@ struct BrainIA {
                 colonnePossible.subtract(yellow)
                 colonnePossible.subtract(Set(grilleImpossible))
                 
-                // a supp et faire tout les resultat dans result et si 2 fois meme valeur la choisir ou prendre le premier
-                //                if let exist = colonnePossible.first {
-                //                    result.append(exist)
-                //                    print(result)
-                //                }
-                result.append(contentsOf: Array(colonnePossible)) // new
+                result.append(contentsOf: Array(colonnePossible))
                 
             }
         }
-        //        if let valeur = result.first {
-        //            resultat = valeur
-        //        }
-        let duplicates = Array(Set(result.filter({ (i: Int) in result.filter({ $0 == i }).count > 1}))) //new
-        if let exist = duplicates.first {                                                               //new
-            resultat = exist                                                                            //new
-        }
-        if result.count > 1 {
-            colonne = 3
+       
+        let duplicates = Array(Set(result.filter({ (i: Int) in result.filter({ $0 == i }).count > 1})))
+        if let exist = duplicates.first {
+            resultat = exist
+            if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
+                
+                colonne = colonnePlayed(caseGrille: resultat)
+            }
+
         } else {
-            if resultat != 0 {
-                let combinaison = result + Array(red)
+        for resultat in result {
+                let combinaison = [resultat] + Array(red)
          
                 let solution1:[Int] = [resultat,resultat + 6,resultat + 12,resultat + 18]
                 let solution2:[Int] = [resultat,resultat - 6,resultat + 6,resultat + 12]
@@ -482,7 +444,10 @@ struct BrainIA {
                     combinaison.sorted().contains(array: (solution2.sorted())) ||
                     combinaison.sorted().contains(array: (solution3.sorted())) ||
                     combinaison.sorted().contains(array: (solution4.sorted())) {
-                    colonne = colonnePlayed(caseGrille: resultat)
+                    if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
+                        
+                        colonne = colonnePlayed(caseGrille: resultat)
+                    }
                 } else {
                     colonne = 3
                 }
@@ -508,27 +473,22 @@ struct BrainIA {
                 colonnePossible.subtract(red)
                 colonnePossible.subtract(yellow)
                 colonnePossible.subtract(Set(grilleImpossible))
-                // a supp et faire tout les resultat dans result et si 2 fois meme valeur la choisir ou prendre le premier
-//                if let exist = colonnePossible.first {
-//                    result.append(exist)
-//                    print(result)
-//                }
-                result.append(contentsOf: Array(colonnePossible)) // new
+
+                result.append(contentsOf: Array(colonnePossible))
                 
             }
         }
-//        if let valeur = result.first {
-//            resultat = valeur
-//        }
-        let duplicates = Array(Set(result.filter({ (i: Int) in result.filter({ $0 == i }).count > 1}))) //new
-        if let exist = duplicates.first {                                                               //new
-            resultat = exist                                                                            //new
-        }                                                                                               //new
-        if result.count > 1 {
-            colonne = 3
+
+        let duplicates = Array(Set(result.filter({ (i: Int) in result.filter({ $0 == i }).count > 1})))
+        if let exist = duplicates.first {
+            resultat = exist
+            if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
+                
+                colonne = colonnePlayed(caseGrille: resultat)
+            }
         } else {
-            if resultat != 0 {
-                let combinaison = result + Array(red)
+        for resultat in result {
+                let combinaison = [resultat] + Array(red)
               
                 let solution1:[Int] = [resultat,resultat + 8,resultat + 16,resultat + 24]
                 let solution2:[Int] = [resultat,resultat - 8,resultat + 8,resultat + 16]
@@ -539,7 +499,10 @@ struct BrainIA {
                     combinaison.sorted().contains(array: (solution2.sorted())) ||
                     combinaison.sorted().contains(array: (solution3.sorted())) ||
                     combinaison.sorted().contains(array: (solution4.sorted())) {
-                    colonne = colonnePlayed(caseGrille: resultat)
+                    if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
+                        
+                        colonne = colonnePlayed(caseGrille: resultat)
+                    }
                 } else {
                     colonne = 3
                 }
@@ -552,7 +515,7 @@ struct BrainIA {
     
     
     //Fonction IA play
-    func iAPlay (red: Set<Int>, yellow: Set<Int>) -> Int {
+    mutating func iAPlay (red: Set<Int>, yellow: Set<Int>) -> Int {
         var resultat = 13
         
         if defenseColonne(red: red, yellow: yellow) != 3 {
@@ -588,14 +551,20 @@ struct BrainIA {
             print("resultat8:\(resultat)")
 
         } else {
-            if !red.contains(39) && !yellow.contains(39) {
+            if !red.contains(39) && !yellow.contains(39) && leftCenter == false && rightCenter == false {
             resultat = 3
+                leftCenter = true
+                rightCenter = false
             print("resultat9:\(resultat)")
-            } else if !red.contains(38) && !yellow.contains(38) {
+            } else if !red.contains(38) && !yellow.contains(38) && leftCenter == true && rightCenter == false {
                 resultat = 2
+                leftCenter = false
+                rightCenter = true
                 print("resultat9:\(resultat)")
-            } else if !red.contains(40) && !yellow.contains(40) {
+            } else if !red.contains(40) && !yellow.contains(40) && leftCenter == false && rightCenter == true {
                 resultat = 4
+                leftCenter = false
+                rightCenter = false
                 print("resultat9:\(resultat)")
             } else if !red.contains(37) && !yellow.contains(37) {
                 resultat = 1
