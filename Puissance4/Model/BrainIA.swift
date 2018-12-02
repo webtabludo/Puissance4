@@ -367,7 +367,6 @@ struct BrainIA {
         let duplicates = Array(Set(result.filter({ (i: Int) in result.filter({ $0 == i }).count > 1})))
         if let exist = duplicates.first {
             resultat = exist
-            print("ça merde resultat:\(resultat)")
             if (resultat != 0 && ( yellow.contains(resultat - 7) || red.contains(resultat - 7))) || resultat <= 7 {
                 
                 colonne = colonnePlayed(caseGrille: resultat)
@@ -375,7 +374,6 @@ struct BrainIA {
         } else {
             for resultat in result{
                 let combinaison = [resultat] + Array(red)
-                print("ça merde combinaison:\(combinaison)")
 
                 let solution1:[Int] = [resultat,resultat + 1,resultat + 2,resultat + 3]
                 let solution2:[Int] = [resultat,resultat - 1,resultat + 1,resultat + 2]

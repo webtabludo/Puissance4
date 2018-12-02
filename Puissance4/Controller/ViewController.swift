@@ -10,10 +10,11 @@
 import UIKit
 
 class ViewController: UIViewController {
-    
+    //var imageRondeJaune:UIView!
     var gravity: UIGravityBehavior!
     var animator: UIDynamicAnimator!
     var collision: UICollisionBehavior!
+    
     
     
     @IBOutlet weak var arrow: UIImageView!
@@ -38,12 +39,42 @@ class ViewController: UIViewController {
         mecanisme.coordonnées = Dictionary(uniqueKeysWithValues: zip(1...42,mecanisme.grilleVide))
         
     }
+    
+    // Fonction popup Alert fin de jeu
+    
+    func alerte(winner: String) {
+        
+        let alert = UIAlertController(title: "Game Over", message: winner, preferredStyle: .alert)
+        let ok = UIAlertAction(title: "Ok", style: .default) { (action) in
+            self.dismiss(animated: true, completion: nil)
+            
+            // self.view.subviews.forEach { $0.removeFromSuperview() }
+            for v in self.view.subviews{
+                if v is JetonJaune {
+                    v.removeFromSuperview()
+                } else if v is JetonRouge {
+                    v.removeFromSuperview()
+                }
+            }
+            self.victoire = false
+            self.positCurseur = 8
+            self.remplissageColonne = 0
+            self.mecanisme.grilleDeJeux = [[],[],[],[],[],[],[]]
+            self.mecanisme.grilleVide = []
+            self.mecanisme.coordonnées = [:]
+            self.mecanisme.grilleRed = []
+            self.mecanisme.grilleYellow = []
+
+        }
+        alert.addAction(ok)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
     // Slider + Mouvement flèche
     
     @IBAction func slider(_ sender: UISlider) {
         let currentValue = coordHorizontal[Int(sender.value)]
         positCurseur = currentValue
-        print(positCurseur)
         UIView.animate(withDuration: 0, animations: {
             self.arrow.frame.origin.x = CGFloat(self.positCurseur)
         }, completion: nil)
@@ -60,8 +91,14 @@ class ViewController: UIViewController {
         let colonne = addJeton()
         
         updateGlobal(jeton: "R", colonne: colonne, remplissageColonne: remplissageColonne)
-        
+        if victoire(jeton: "R") == true {
+            print("victoire rouge")
+            alerte(winner: "vous avez gagné")
+        } else if (mecanisme.grilleRed.count + mecanisme.grilleYellow.count) == 42 {
+            alerte(winner: "Egalité")
+        }
         boutonValider.isEnabled = false
+        //IA Play
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
 
             let choix = self.brain.iAPlay(red: self.mecanisme.grilleRed, yellow: self.mecanisme.grilleYellow)
@@ -78,7 +115,14 @@ class ViewController: UIViewController {
             
             let colonneIA = self.addJeton()
             self.updateGlobal(jeton: "J", colonne: colonneIA, remplissageColonne: self.remplissageColonne)
+            if self.victoire(jeton: "J") == true {
+                print("victoire jaune")
+                self.alerte(winner: "I'm the best")
 
+            } else if (self.mecanisme.grilleRed.count + self.mecanisme.grilleYellow.count) == 42 {
+                self.alerte(winner: "Egalité")
+                
+            }
             self.boutonValider.isEnabled = true
             
             
@@ -155,7 +199,6 @@ class ViewController: UIViewController {
         mecanisme.ajouterJeton(jeton: jeton, colonne: colonne)
         
         mecanisme.coordonnées.updateValue(jeton, forKey: (remplissageColonne * 7) + (colonne + 1))
-        print(mecanisme.coordonnées)
         
         for (key,value) in mecanisme.coordonnées {
             if value == "R" {
@@ -166,14 +209,17 @@ class ViewController: UIViewController {
                 print("GrilleYellow:\(mecanisme.grilleYellow)")
             }
         }
+
+    }
+    // test victoire
+    func victoire(jeton: String) -> Bool {
         if jeton == "R" {
             victoire = mecanisme.testVictoire(grilleJeton: mecanisme.grilleRed)
         } else if jeton == "J" {
             victoire = mecanisme.testVictoire(grilleJeton: mecanisme.grilleYellow)
         }
+        return victoire
     }
-    
-    
     
     // Fonction création d'un Jeton Rouge
     
@@ -218,5 +264,7 @@ class ViewController: UIViewController {
         collision.collisionMode = .everything
         animator.addBehavior(collision)
     }
+    
+    
 }
 

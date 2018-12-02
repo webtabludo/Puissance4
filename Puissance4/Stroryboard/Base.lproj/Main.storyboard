@@ -68,6 +68,7 @@
                         <outlet property="arrow" destination="sRx-uP-l7R" id="UNw-aK-6Qk"/>
                         <outlet property="boutonValider" destination="fjb-Pf-2DV" id="tBS-Q8-5N2"/>
                         <outlet property="slider" destination="iJW-0K-nBT" id="Pow-iS-NfS"/>
+                        <outlet property="view" destination="8bC-Xf-vdC" id="tNL-rn-37R"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

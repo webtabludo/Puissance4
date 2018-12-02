@@ -77,6 +77,7 @@ struct Mecanisme {
         var isVictorious = false
         let grille = Array(grilleJeton)
         let resultat = combinations(source: grille, takenBy: 4)
+        print("les conf gagnate possible:\(resultat)")
         for solution in resultat {
             if configurationGagnante.contains(solution.sorted()) {
                 isVictorious = true
