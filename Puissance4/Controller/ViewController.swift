@@ -19,7 +19,9 @@ class ViewController: UIViewController {
     @IBOutlet weak var arrow: UIImageView!
     @IBOutlet weak var boutonValider: UIButton!
     
+    @IBOutlet weak var slider: UISlider!
     var victoire =  false
+    let positionsCurseur = [8,60,113,165,217,270,322]
     
     let coordHorizontal = [8,60,113,165,217,270,322]
     let coordVertical = [473,419.5,367,314.5,262,209.5]
@@ -50,8 +52,8 @@ class ViewController: UIViewController {
     // Bouton valider
     
     @IBAction func valideAction(_ sender: UIButton) {
-        let gravityBoundary = boundary(positCurseur: positCurseur)
-        
+        var gravityBoundary = boundary(positCurseur: positCurseur)
+
         creationJetonRouge(frameX: positCurseur, gravityB: CGFloat(gravityBoundary))
         
         // Ajouter le jeton dans la grille
@@ -62,9 +64,21 @@ class ViewController: UIViewController {
         boutonValider.isEnabled = false
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
 
-            let choix = self.brain.iAPlay()
-            let gravityBoundaryIA = self.boundaryIA(positCurseur: choix)
-            self.creationJetonJaune(frameX: choix, gravityB: CGFloat(gravityBoundaryIA))
+            let choix = self.brain.iAPlay(red: self.mecanisme.grilleRed, yellow: self.mecanisme.grilleYellow)
+            self.positCurseur = self.positionsCurseur[choix]
+            self.slider.setValue(Float(choix), animated: true)
+            UIView.animate(withDuration: 0, animations: {
+                self.arrow.frame.origin.x = CGFloat(self.positCurseur)
+            }, completion: nil)
+            
+            
+            
+            gravityBoundary = self.boundary(positCurseur: self.positCurseur)
+            self.creationJetonJaune(frameX: self.positCurseur, gravityB: CGFloat(gravityBoundary))
+            
+            let colonneIA = self.addJeton()
+            self.updateGlobal(jeton: "J", colonne: colonneIA, remplissageColonne: self.remplissageColonne)
+
             self.boutonValider.isEnabled = true
             
             
@@ -133,39 +147,6 @@ class ViewController: UIViewController {
     }
     
     
-    //Fonction création de la boundary IA
-    
-    func boundaryIA (positCurseur: Int) -> Double {
-        var gravityBoundary = 0.0
-        switch positCurseur {
-        case 0:
-            remplissageColonne = mecanisme.grilleDeJeux[0].count
-            gravityBoundary = coordVertical[remplissageColonne]
-        case 1:
-            remplissageColonne = mecanisme.grilleDeJeux[1].count
-            gravityBoundary = coordVertical[remplissageColonne]
-        case 2:
-            remplissageColonne = mecanisme.grilleDeJeux[2].count
-            gravityBoundary = coordVertical[remplissageColonne]
-        case 3:
-            remplissageColonne = mecanisme.grilleDeJeux[3].count
-            gravityBoundary = coordVertical[remplissageColonne]
-        case 4:
-            remplissageColonne = mecanisme.grilleDeJeux[4].count
-            gravityBoundary = coordVertical[remplissageColonne]
-        case 5:
-            remplissageColonne = mecanisme.grilleDeJeux[5].count
-            gravityBoundary = coordVertical[remplissageColonne]
-        case 6:
-            remplissageColonne = mecanisme.grilleDeJeux[6].count
-            gravityBoundary = coordVertical[remplissageColonne]
-        default:
-            print("impossible")
-            
-        }
-        
-        return gravityBoundary
-    }
     
     // Fonction mise à jour BDD + test victoire
     

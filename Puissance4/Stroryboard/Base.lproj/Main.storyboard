@@ -67,6 +67,7 @@
                     <connections>
                         <outlet property="arrow" destination="sRx-uP-l7R" id="UNw-aK-6Qk"/>
                         <outlet property="boutonValider" destination="fjb-Pf-2DV" id="tBS-Q8-5N2"/>
+                        <outlet property="slider" destination="iJW-0K-nBT" id="Pow-iS-NfS"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -75,7 +76,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Arrow" width="48" height="48"/>
+        <image name="Arrow" width="64" height="64"/>
         <image name="Grille Finale" width="692" height="590"/>
     </resources>
 </document>
