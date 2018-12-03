@@ -513,9 +513,9 @@ struct BrainIA {
     
     
     //Fonction IA play
-    mutating func iAPlay (red: Set<Int>, yellow: Set<Int>) -> Int {
+    mutating func iAPlay (red: Set<Int>, yellow: Set<Int>,commence: Bool) -> Int {
         var resultat = 13
-        
+        if commence == true {
         if defenseColonne(red: red, yellow: yellow) != 3 {
             resultat = defenseColonne(red: red, yellow: yellow)
             print("resultat1:\(resultat)")
@@ -579,7 +579,9 @@ struct BrainIA {
             }
             
         }
-        
+        } else if commence == false {
+            resultat = 2
+        }
         return resultat
     }
 }

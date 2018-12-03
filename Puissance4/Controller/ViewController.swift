@@ -25,7 +25,7 @@ class ViewController: UIViewController {
     
     let coordHorizontal = [8,60,113,165,217,270,322]
     let coordVertical = [473,419.5,367,314.5,262,209.5]
-    
+    var isIAStart = false
     var positCurseur = 8
     var mecanisme = Mecanisme()
     var remplissageColonne = 0
@@ -51,9 +51,9 @@ class ViewController: UIViewController {
         let No = UIAlertAction(title: "No", style: .default) { action in
             self.dismiss(animated: true, completion: nil)
             var gravityBoundary = self.boundary(positCurseur: self.positCurseur)
-            
+            self.isIAStart = true
                 
-                let choix = self.brain.iAPlay(red: self.mecanisme.grilleRed, yellow: self.mecanisme.grilleYellow)
+            let choix = self.brain.iAPlay(red: self.mecanisme.grilleRed, yellow: self.mecanisme.grilleYellow, commence: self.isIAStart)
                 self.positCurseur = self.positionsCurseur[choix]
                 self.slider.setValue(Float(choix), animated: true)
                 UIView.animate(withDuration: 0, animations: {
@@ -79,6 +79,7 @@ class ViewController: UIViewController {
         }
         let Yes = UIAlertAction(title: "Yes", style: .default) { action in
             self.dismiss(animated: true, completion: nil)
+            self.isIAStart = false
 
 
         }
@@ -144,6 +145,7 @@ class ViewController: UIViewController {
         if mecanisme.testVictoire(grilleJeton: mecanisme.grilleRed) == true {
             print("victoire rouge")
             alerte(winner: "vous avez gagné")
+            victoire = true
             
         } else if (mecanisme.grilleRed.count + mecanisme.grilleYellow.count) == 42 {
             alerte(winner: "Egalité")
@@ -160,9 +162,10 @@ class ViewController: UIViewController {
             var gravityBoundary = boundary(positCurseur: positCurseur)
             joueurPlay(gravityBoundary: gravityBoundary)
             //IA Play
+        if victoire == false {
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 
-                let choix = self.brain.iAPlay(red: self.mecanisme.grilleRed, yellow: self.mecanisme.grilleYellow)
+                let choix = self.brain.iAPlay(red: self.mecanisme.grilleRed, yellow: self.mecanisme.grilleYellow, commence: self.isIAStart )
                 self.positCurseur = self.positionsCurseur[choix]
                 self.slider.setValue(Float(choix), animated: true)
                 UIView.animate(withDuration: 0, animations: {
@@ -185,7 +188,7 @@ class ViewController: UIViewController {
                 }
                 self.boutonValider.isEnabled = true
             }
-        
+        }
         
     }
     
