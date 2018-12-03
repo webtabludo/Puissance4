@@ -39,6 +39,54 @@ class ViewController: UIViewController {
         
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        demarrage()
+
+    }
+    
+    //Fonction choix premier joueur
+    func demarrage () {
+        let alert = UIAlertController(title: "Puissance 4", message: "Voulez vous commencer ?", preferredStyle: .alert)
+        
+        let No = UIAlertAction(title: "No", style: .default) { action in
+            self.dismiss(animated: true, completion: nil)
+            var gravityBoundary = self.boundary(positCurseur: self.positCurseur)
+            
+                
+                let choix = self.brain.iAPlay(red: self.mecanisme.grilleRed, yellow: self.mecanisme.grilleYellow)
+                self.positCurseur = self.positionsCurseur[choix]
+                self.slider.setValue(Float(choix), animated: true)
+                UIView.animate(withDuration: 0, animations: {
+                    self.arrow.frame.origin.x = CGFloat(self.positCurseur)
+                }, completion: nil)
+                
+                
+                gravityBoundary = self.boundary(positCurseur: self.positCurseur)
+                self.creationJetonJaune(frameX: self.positCurseur, gravityB: CGFloat(gravityBoundary))
+                
+                let colonneIA = self.addJeton()
+                self.updateGlobal(jeton: "J", colonne: colonneIA, remplissageColonne: self.remplissageColonne)
+                if self.mecanisme.testVictoire(grilleJeton: self.mecanisme.grilleYellow) == true {
+                    print("victoire jaune")
+                    self.alerte(winner: "I'm the best")
+                    
+                } else if (self.mecanisme.grilleRed.count + self.mecanisme.grilleYellow.count) == 42 {
+                    self.alerte(winner: "Egalité")
+                    
+                }
+                self.boutonValider.isEnabled = true
+            
+        }
+        let Yes = UIAlertAction(title: "Yes", style: .default) { action in
+            self.dismiss(animated: true, completion: nil)
+
+
+        }
+        alert.addAction(No)
+        alert.addAction(Yes)
+        self.present(alert, animated: true, completion: nil)
+        
+    }
     // Fonction popup Alert fin de jeu
     
     func alerte(winner: String) {
@@ -63,6 +111,7 @@ class ViewController: UIViewController {
             self.mecanisme.coordonnées = [:]
             self.mecanisme.grilleRed = []
             self.mecanisme.grilleYellow = []
+            self.viewDidAppear(true)
 
         }
         let backView = alert.view.subviews.last?.subviews.last
@@ -82,11 +131,9 @@ class ViewController: UIViewController {
             self.arrow.frame.origin.x = CGFloat(self.positCurseur)
         }, completion: nil)
     }
+    // joueur play
     
-    // Bouton valider
-    
-    @IBAction func valideAction(_ sender: UIButton) {
-        var gravityBoundary = boundary(positCurseur: positCurseur)
+    func joueurPlay (gravityBoundary: Double) {
 
         creationJetonRouge(frameX: positCurseur, gravityB: CGFloat(gravityBoundary))
         
@@ -102,32 +149,44 @@ class ViewController: UIViewController {
             alerte(winner: "Egalité")
         }
         boutonValider.isEnabled = false
-        //IA Play
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-
-            let choix = self.brain.iAPlay(red: self.mecanisme.grilleRed, yellow: self.mecanisme.grilleYellow)
-            self.positCurseur = self.positionsCurseur[choix]
-            self.slider.setValue(Float(choix), animated: true)
-            UIView.animate(withDuration: 0, animations: {
-                self.arrow.frame.origin.x = CGFloat(self.positCurseur)
-            }, completion: nil)
-            
-
-            gravityBoundary = self.boundary(positCurseur: self.positCurseur)
-            self.creationJetonJaune(frameX: self.positCurseur, gravityB: CGFloat(gravityBoundary))
-            
-            let colonneIA = self.addJeton()
-            self.updateGlobal(jeton: "J", colonne: colonneIA, remplissageColonne: self.remplissageColonne)
-            if self.mecanisme.testVictoire(grilleJeton: self.mecanisme.grilleYellow) == true {
-                print("victoire jaune")
-                self.alerte(winner: "I'm the best")
-
-            } else if (self.mecanisme.grilleRed.count + self.mecanisme.grilleYellow.count) == 42 {
-                self.alerte(winner: "Egalité")
+ 
+    }
+    
+    
+    // Bouton valider
+    
+    @IBAction func valideAction(_ sender: UIButton) {
+       
+            var gravityBoundary = boundary(positCurseur: positCurseur)
+            joueurPlay(gravityBoundary: gravityBoundary)
+            //IA Play
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 
+                let choix = self.brain.iAPlay(red: self.mecanisme.grilleRed, yellow: self.mecanisme.grilleYellow)
+                self.positCurseur = self.positionsCurseur[choix]
+                self.slider.setValue(Float(choix), animated: true)
+                UIView.animate(withDuration: 0, animations: {
+                    self.arrow.frame.origin.x = CGFloat(self.positCurseur)
+                }, completion: nil)
+                
+                
+                gravityBoundary = self.boundary(positCurseur: self.positCurseur)
+                self.creationJetonJaune(frameX: self.positCurseur, gravityB: CGFloat(gravityBoundary))
+                
+                let colonneIA = self.addJeton()
+                self.updateGlobal(jeton: "J", colonne: colonneIA, remplissageColonne: self.remplissageColonne)
+                if self.mecanisme.testVictoire(grilleJeton: self.mecanisme.grilleYellow) == true {
+                    print("victoire jaune")
+                    self.alerte(winner: "I'm the best")
+                    
+                } else if (self.mecanisme.grilleRed.count + self.mecanisme.grilleYellow.count) == 42 {
+                    self.alerte(winner: "Egalité")
+                    
+                }
+                self.boutonValider.isEnabled = true
             }
-            self.boutonValider.isEnabled = true
-        }
+        
+        
     }
     
     //Fonction ajouter le jeton dans la grille
