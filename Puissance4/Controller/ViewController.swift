@@ -10,13 +10,12 @@
 import UIKit
 
 class ViewController: UIViewController {
-    //var imageRondeJaune:UIView!
+    
     var gravity: UIGravityBehavior!
     var animator: UIDynamicAnimator!
     var collision: UICollisionBehavior!
     
-    
-    
+
     @IBOutlet weak var arrow: UIImageView!
     @IBOutlet weak var boutonValider: UIButton!
     
@@ -66,6 +65,10 @@ class ViewController: UIViewController {
             self.mecanisme.grilleYellow = []
 
         }
+        let backView = alert.view.subviews.last?.subviews.last
+        backView?.layer.cornerRadius = 10.0
+        backView?.backgroundColor = UIColor.yellow
+        
         alert.addAction(ok)
         
         self.present(alert, animated: true, completion: nil)
@@ -91,9 +94,10 @@ class ViewController: UIViewController {
         let colonne = addJeton()
         
         updateGlobal(jeton: "R", colonne: colonne, remplissageColonne: remplissageColonne)
-        if victoire(jeton: "R") == true {
+        if mecanisme.testVictoire(grilleJeton: mecanisme.grilleRed) == true {
             print("victoire rouge")
             alerte(winner: "vous avez gagné")
+            
         } else if (mecanisme.grilleRed.count + mecanisme.grilleYellow.count) == 42 {
             alerte(winner: "Egalité")
         }
@@ -108,14 +112,13 @@ class ViewController: UIViewController {
                 self.arrow.frame.origin.x = CGFloat(self.positCurseur)
             }, completion: nil)
             
-            
-            
+
             gravityBoundary = self.boundary(positCurseur: self.positCurseur)
             self.creationJetonJaune(frameX: self.positCurseur, gravityB: CGFloat(gravityBoundary))
             
             let colonneIA = self.addJeton()
             self.updateGlobal(jeton: "J", colonne: colonneIA, remplissageColonne: self.remplissageColonne)
-            if self.victoire(jeton: "J") == true {
+            if self.mecanisme.testVictoire(grilleJeton: self.mecanisme.grilleYellow) == true {
                 print("victoire jaune")
                 self.alerte(winner: "I'm the best")
 
@@ -124,12 +127,8 @@ class ViewController: UIViewController {
                 
             }
             self.boutonValider.isEnabled = true
-            
-            
         }
-        
     }
-    
     
     //Fonction ajouter le jeton dans la grille
     
@@ -199,7 +198,7 @@ class ViewController: UIViewController {
         mecanisme.ajouterJeton(jeton: jeton, colonne: colonne)
         
         mecanisme.coordonnées.updateValue(jeton, forKey: (remplissageColonne * 7) + (colonne + 1))
-        
+        print("mecanisme.coordonnées:\(mecanisme.coordonnées)")
         for (key,value) in mecanisme.coordonnées {
             if value == "R" {
                 mecanisme.grilleRed.insert(key)
@@ -209,17 +208,8 @@ class ViewController: UIViewController {
                 print("GrilleYellow:\(mecanisme.grilleYellow)")
             }
         }
+    }
 
-    }
-    // test victoire
-    func victoire(jeton: String) -> Bool {
-        if jeton == "R" {
-            victoire = mecanisme.testVictoire(grilleJeton: mecanisme.grilleRed)
-        } else if jeton == "J" {
-            victoire = mecanisme.testVictoire(grilleJeton: mecanisme.grilleYellow)
-        }
-        return victoire
-    }
     
     // Fonction création d'un Jeton Rouge
     

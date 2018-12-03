@@ -72,22 +72,21 @@ struct Mecanisme {
         result += combinations(source: rest, takenBy: takenBy)
         return result
     }
-     // Fonction  test victoire
+    // Fonction  test victoire
     func testVictoire (grilleJeton: Set<Int>) -> Bool {
         var isVictorious = false
         let grille = Array(grilleJeton)
         let resultat = combinations(source: grille, takenBy: 4)
-        print("les conf gagnate possible:\(resultat)")
+        print("les conf gagnante possible:\(resultat)")
+        
         for solution in resultat {
+            
             if configurationGagnante.contains(solution.sorted()) {
                 isVictorious = true
-            } else {
-                isVictorious = false
             }
         }
         print("victoire:\(isVictorious)")
         return isVictorious
-        
     }
 }
 
